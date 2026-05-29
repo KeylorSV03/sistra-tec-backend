@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 const { errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
@@ -9,8 +11,16 @@ app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Documentacion API
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Rutas
-// app.use("/api", ejemploRoutes);
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
+// app.use("/api/donations", donationRoutes);
+// app.use("/api/admin", adminRoutes);
+// app.use("/api/transporter", transporterRoutes);
+// app.use("/api/notifications", notificationRoutes);
 
 // Manejo de errores (siempre al final)
 app.use(errorHandler);
