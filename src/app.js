@@ -16,11 +16,12 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas
 const authRoutes = require("./routes/authRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 app.use("/api/auth", authRoutes);
+app.use("/api/notifications", notificationRoutes);
 // app.use("/api/donations", donationRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/transporter", transporterRoutes);
-// app.use("/api/notifications", notificationRoutes);
 
 // Manejo de errores (siempre al final)
 app.use(errorHandler);

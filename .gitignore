@@ -1,2 +1,5 @@
 node_modules/
 .env
+CONTEXT.md
+docs_notifications_functions.md
+
