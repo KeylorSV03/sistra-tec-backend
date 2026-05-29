@@ -54,7 +54,6 @@ const register = async ({ name, email, password, phone_number }) => {
             to: user.email,
             subject: "¡Bienvenido a SISTRA-TEC!",
             html: welcomeEmail.html(user.name),
-            attachments: welcomeEmail.attachments(),
         }).catch(() => {});
 
         return formatUser(user);

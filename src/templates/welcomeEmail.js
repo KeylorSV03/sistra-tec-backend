@@ -1,8 +1,3 @@
-const path = require("path");
-const fs = require("fs");
-
-const logoPath = path.join(__dirname, "../assets/logo.png");
-
 const html = (name) => `
 <!DOCTYPE html>
 <html lang="es">
@@ -20,7 +15,7 @@ const html = (name) => `
           <!-- Header -->
           <tr>
             <td style="background-color:#0f172a;padding:36px;text-align:center;">
-              <img src="cid:logo" width="72" height="72"
+              <img src="${process.env.LOGO_BLANCO_URL}" width="72" height="72"
                 style="display:block;margin:0 auto 16px;" alt="SISTRA-TEC">
               <h1 style="color:#ffffff;font-size:22px;margin:0 0 6px;letter-spacing:1px;">SISTRA-TEC</h1>
               <p style="color:#94a3b8;font-size:12px;margin:0;letter-spacing:2px;text-transform:uppercase;">
@@ -107,9 +102,4 @@ const html = (name) => `
 </body>
 </html>`;
 
-const attachments = () => {
-    if (!fs.existsSync(logoPath)) return [];
-    return [{ filename: "logo.png", path: logoPath, cid: "logo" }];
-};
-
-module.exports = { html, attachments };
+module.exports = { html };
