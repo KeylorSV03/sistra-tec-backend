@@ -27,7 +27,7 @@ const handleDbError = (error) => {
     const separatorIndex = raw.indexOf(": ");
 
     if (separatorIndex === -1) {
-        return new AppError("Error interno del servidor.", 500);
+        return new AppError(raw || "Error interno del servidor.", 500);
     }
 
     const code = raw.substring(0, separatorIndex);

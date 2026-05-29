@@ -21,7 +21,8 @@ const notificationRoutes = require("./routes/notificationRoutes");
 app.use("/api/auth",          authRoutes);
 app.use("/api/donations",     donationRoutes);
 app.use("/api/notifications", notificationRoutes);
-// app.use("/api/admin",       adminRoutes);
+const adminRoutes        = require("./routes/adminRoutes");
+app.use("/api/admin",         adminRoutes);
 // app.use("/api/transporter", transporterRoutes);
 
 // Manejo de errores (siempre al final)
