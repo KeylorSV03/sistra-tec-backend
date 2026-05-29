@@ -15,9 +15,11 @@ app.use(cookieParser());
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
-// app.use("/api/donations", donationRoutes);
+const authRoutes     = require("./routes/authRoutes");
+const donationRoutes = require("./routes/donationRoutes");
+app.use("/api/auth",      authRoutes);
+app.use("/api/donations", donationRoutes);
+// app.use("/api/admin", adminRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/transporter", transporterRoutes);
 // app.use("/api/notifications", notificationRoutes);

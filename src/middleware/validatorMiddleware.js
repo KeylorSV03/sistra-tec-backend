@@ -27,7 +27,10 @@ const validarDatos = (schemas) => {
             }
 
             if (schemas.query) {
-                const { error, value } = schemas.query.validate(req.query, {
+                const cleanQuery = Object.fromEntries(
+                    Object.entries(req.query).filter(([, v]) => v !== "")
+                );
+                const { error, value } = schemas.query.validate(cleanQuery, {
                     abortEarly: false,
                 });
                 if (error) {
