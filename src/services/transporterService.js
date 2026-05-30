@@ -10,8 +10,13 @@ const getTransporterDeliveries = async (transporterId, query) => {
 	const dateTo = toStr(query.date_to);
 	const search = toStr(query.search);
 	const order = toOrder(query.order);
-	const limit = toInt(query.limit, 20);
-	const offset = toInt(query.offset, 0);
+	let limit = toInt(query.limit, 20);
+	let offset = toInt(query.offset, 0);
+
+	// Validar límites
+	if (limit > 100) limit = 100;
+	if (limit < 1) limit = 20;
+	if (offset < 0) offset = 0;
 
 	try {
 		const rows = await transporterModel.getTransporterDeliveries(
