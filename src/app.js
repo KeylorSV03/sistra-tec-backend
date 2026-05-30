@@ -22,8 +22,9 @@ app.use("/api/auth",          authRoutes);
 app.use("/api/donations",     donationRoutes);
 app.use("/api/notifications", notificationRoutes);
 const adminRoutes        = require("./routes/adminRoutes");
+const transporterRoutes  = require("./routes/transporterRoutes");
 app.use("/api/admin",         adminRoutes);
-// app.use("/api/transporter", transporterRoutes);
+app.use("/api/transporter",   transporterRoutes);
 
 // Manejo de errores (siempre al final)
 app.use(errorHandler);
