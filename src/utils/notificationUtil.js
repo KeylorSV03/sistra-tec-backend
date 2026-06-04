@@ -1,5 +1,52 @@
 const { obtenerPool } = require("../config/dbConfig");
 
+const FALLBACK_TEMPLATES = {
+    BIENVENIDA: {
+        title: "Bienvenido a SISTRA-TEC",
+        body: "Hola {user_name}, tu cuenta fue creada correctamente.",
+    },
+    CUENTA_CREADA_TRANSPORTISTA: {
+        title: "Cuenta de transportista creada",
+        body: "Hola {user_name}, ya tenes una cuenta de transportista en SISTRA-TEC con el correo {email}.",
+    },
+    CUENTA_CREADA_TRANSPORTISTA_ADMIN: {
+        title: "Transportista creado",
+        body: "Se creo la cuenta de transportista para {user_name} ({email}).",
+    },
+    DONACION_CREADA: {
+        title: "Donacion registrada",
+        body: "Tu donacion de {item_name} fue registrada correctamente.",
+    },
+    DONACION_NUEVA_ADMIN: {
+        title: "Nueva donacion registrada",
+        body: "{donor_name} registro {quantity} {unit} de {item_name}.",
+    },
+    ENTREGA_ASIGNADA: {
+        title: "Nueva asignacion de entrega",
+        body: "Se te asigno la entrega de {item_name}.",
+    },
+    ENTREGA_RECOGIDA: {
+        title: "Recogida confirmada",
+        body: "Se confirmo la recogida de {item_name}.",
+    },
+    ESTADO_RECIBIDO: {
+        title: "Donacion recibida",
+        body: "Tu donacion de {item_name} fue marcada como recibida.",
+    },
+    ESTADO_CLASIFICADO: {
+        title: "Donacion clasificada",
+        body: "Tu donacion de {item_name} fue clasificada.",
+    },
+    ESTADO_EN_TRANSITO: {
+        title: "Donacion en transito",
+        body: "Tu donacion de {item_name} esta en transito.",
+    },
+    ESTADO_ENTREGADO: {
+        title: "Donacion entregada",
+        body: "Tu donacion de {item_name} fue entregada.",
+    },
+};
+
 /**
  * Despacha una notificacion a un usuario.
  * Falla silenciosamente para no interrumpir el flujo principal.
@@ -18,9 +65,11 @@ const dispatchNotification = async (userId, eventType, placeholders = {}, donati
             [eventType]
         );
 
-        if (!tplResult.rows[0]) return;
+        const tpl = tplResult.rows[0] ?? FALLBACK_TEMPLATES[eventType] ?? {
+            title: "Notificacion SISTRA-TEC",
+            body: "Hay una actualizacion en el sistema.",
+        };
 
-        const tpl = tplResult.rows[0];
         let title = tpl.title;
         let body = tpl.body;
 
@@ -34,8 +83,10 @@ const dispatchNotification = async (userId, eventType, placeholders = {}, donati
             "SELECT * FROM create_notification($1, $2, $3, $4, $5)",
             [userId, eventType, title, body, donationId]
         );
+        return true;
     } catch {
         // Las notificaciones no deben interrumpir el flujo principal
+        return false;
     }
 };
 

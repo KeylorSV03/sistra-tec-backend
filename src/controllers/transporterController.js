@@ -14,7 +14,10 @@ const getTransporterDeliveries = async (req, res, next) => {
 
 const getTransporterDeliveryDetail = async (req, res, next) => {
 	try {
-		const delivery = await transporterService.getTransporterDeliveryDetail(Number(req.params.id));
+		const delivery = await transporterService.getTransporterDeliveryDetail(
+			Number(req.params.id),
+			req.user.userId
+		);
 		return res.status(200).json({ status: "ok", delivery });
 	} catch (error) {
 		next(error);

@@ -2,7 +2,7 @@ const adminService = require("../services/adminService");
 
 const createTransporter = async (req, res, next) => {
     try {
-        const transporter = await adminService.createTransporter(req.body);
+        const transporter = await adminService.createTransporter(req.user.userId, req.body);
         return res.status(201).json({
             status: "ok",
             message: "Transportista creado correctamente.",

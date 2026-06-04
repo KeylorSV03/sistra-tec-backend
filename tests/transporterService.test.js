@@ -223,8 +223,8 @@ describe("Transporter Service", () => {
 				delivery_id: 1,
 				donation_id: 10,
 				item_name: "Arroz",
-				status_id: 3,
-				status_name: "Recogida",
+				status_id: 2,
+				status_name: "Recibido",
 				driver_id: 5,
 			};
 
@@ -233,8 +233,8 @@ describe("Transporter Service", () => {
 
 			const result = await transporterService.confirmPickup(10, 5);
 
-			expect(result).toHaveProperty("statusName", "Recogida");
-			expect(transporterModel.updateDonationStatus).toHaveBeenCalledWith(10, 3, "Transportista");
+			expect(result).toHaveProperty("statusName", "Recibido");
+			expect(transporterModel.updateDonationStatus).toHaveBeenCalledWith(10, 2, "Transportista");
 			expect(dispatchNotification).toHaveBeenCalledWith(
 				5,
 				"ENTREGA_RECOGIDA",
@@ -271,6 +271,31 @@ describe("Transporter Service", () => {
 				expect(error.message).toBe("No tenés permiso para confirmar esta entrega.");
 				expect(error.statusCode).toBe(403);
 			}
+		});
+
+		it("should allow confirmation when driver_id is returned as a string", async () => {
+			const mockDelivery = {
+				delivery_id: 1,
+				donation_id: 10,
+				item_name: "Arroz",
+				driver_id: "5",
+			};
+			const mockUpdated = {
+				delivery_id: 1,
+				donation_id: 10,
+				item_name: "Arroz",
+				status_id: 2,
+				status_name: "Recibido",
+				driver_id: "5",
+			};
+
+			transporterModel.getTransporterDeliveryDetail.mockResolvedValue(mockDelivery);
+			transporterModel.updateDonationStatus.mockResolvedValue(mockUpdated);
+
+			const result = await transporterService.confirmPickup(10, 5);
+
+			expect(result).toHaveProperty("statusName", "Recibido");
+			expect(transporterModel.updateDonationStatus).toHaveBeenCalledWith(10, 2, "Transportista");
 		});
 
 		it("should handle database errors", async () => {

@@ -1,8 +1,11 @@
 const transporterModel = require("../models/transporterModel");
+const { STATUSES } = require("../config/catalogs");
 const { dispatchNotification } = require("../utils/notificationUtil");
 const { handleDbError } = require("../errors/dbErrorHandler");
 const { toInt, toStr, toOrder } = require("../utils/queryUtil");
 const AppError = require("../errors/AppError");
+
+const getStatusId = (name, fallback) => STATUSES[name] ?? fallback;
 
 const getTransporterDeliveries = async (transporterId, query) => {
 	const statusId = toInt(query.status_id, null);
@@ -37,9 +40,9 @@ const getTransporterDeliveries = async (transporterId, query) => {
 	}
 };
 
-const getTransporterDeliveryDetail = async (donationId) => {
+const getTransporterDeliveryDetail = async (donationId, transporterId) => {
 	try {
-		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId);
+		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId, transporterId);
 		if (!delivery) {
 			throw new AppError("Entrega no encontrada.", 404);
 		}
@@ -52,16 +55,20 @@ const getTransporterDeliveryDetail = async (donationId) => {
 
 const confirmPickup = async (donationId, transporterId) => {
 	try {
-		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId);
+		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId, transporterId);
 		if (!delivery) {
 			throw new AppError("Entrega no encontrada.", 404);
 		}
 
-		if (delivery.driver_id !== transporterId) {
+		if (Number(delivery.driver_id) !== Number(transporterId)) {
 			throw new AppError("No tenés permiso para confirmar esta entrega.", 403);
 		}
 
-		const updated = await transporterModel.updateDonationStatus(donationId, 3, "Transportista");
+		const updated = await transporterModel.updateDonationStatus(
+			donationId,
+			getStatusId("Recibido", 2),
+			"Transportista"
+		);
 
 		dispatchNotification(
 			transporterId,
@@ -79,16 +86,20 @@ const confirmPickup = async (donationId, transporterId) => {
 
 const confirmDelivery = async (donationId, transporterId) => {
 	try {
-		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId);
+		const delivery = await transporterModel.getTransporterDeliveryDetail(donationId, transporterId);
 		if (!delivery) {
 			throw new AppError("Entrega no encontrada.", 404);
 		}
 
-		if (delivery.driver_id !== transporterId) {
+		if (Number(delivery.driver_id) !== Number(transporterId)) {
 			throw new AppError("No tenés permiso para confirmar esta entrega.", 403);
 		}
 
-		const updated = await transporterModel.updateDonationStatus(donationId, 5, "Transportista");
+		const updated = await transporterModel.updateDonationStatus(
+			donationId,
+			getStatusId("Entregado", 5),
+			"Transportista"
+		);
 
 		return formatDelivery(updated);
 	} catch (error) {
@@ -107,19 +118,24 @@ const formatDelivery = (row) => ({
 	deliveredAt: row.delivered_at,
 	donationId: row.donation_id,
 	itemName: row.item_name,
+	description: row.description,
 	quantity: row.quantity,
 	unit: row.unit,
+	imageUrl: row.image_url,
 	statusId: row.status_id,
 	statusName: row.status_name,
 	donorName: row.donor_name,
 	donorEmail: row.donor_email,
+	donorPhone: row.donor_phone,
+	driverId: row.driver_id,
+	driverName: row.driver_name,
+	driverEmail: row.driver_email,
 	collectionAddress: row.collection_address,
 	destination: row.destination,
 });
 
 const formatDeliveryDetail = (row) => ({
 	...formatDelivery(row),
-	donorPhone: row.donor_phone,
 });
 
 module.exports = {
