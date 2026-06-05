@@ -61,7 +61,6 @@ src/
 ├── validations/     # Esquemas Joi
 ├── utils/           # Funciones reutilizables
 └── errors/          # Clases de error personalizadas
-└── tests/           # Pruebas unitarias
 
 ```
 
