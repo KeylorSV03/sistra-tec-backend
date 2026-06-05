@@ -33,10 +33,12 @@ const generateResetToken = (userId, code) =>
         { expiresIn: "10m" }
     );
 
+const isProd = process.env.NODE_ENV === "production";
+
 const REFRESH_COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProd,
+    sameSite: isProd ? "none" : "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias en ms
 };
 
@@ -108,7 +110,7 @@ const refresh = async (refreshToken, res) => {
 };
 
 const logout = (res) => {
-    res.clearCookie("refresh_token", { httpOnly: true, sameSite: "strict" });
+    res.clearCookie("refresh_token", { httpOnly: true, secure: isProd, sameSite: isProd ? "none" : "strict" });
 };
 
 const forgotPassword = async ({ email }) => {
